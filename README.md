@@ -9,7 +9,7 @@
 
 **Entries**
 
-
+- [Average Range](https://github.com/369geofreeman/system_strategies/blob/main/entries/average_range_entries.py)
 
 **API**
 
