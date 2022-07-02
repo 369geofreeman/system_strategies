@@ -7,6 +7,8 @@
 
 - [LOESS Regression](https://github.com/369geofreeman/system_strategies/blob/main/Stop_loss_detection/LOESS_for_stops/LOESS_for_stops.ipynb)
 
+- [Analysis of the OrderBook](https://github.com/369geofreeman/system_strategies/blob/main/Stop_loss_detection/LOESS_for_stops/order_book_inflow.ipynb)
+
 **Entries**
 
 - [Average Range](https://github.com/369geofreeman/system_strategies/blob/main/entries/average_range_entries.py)
