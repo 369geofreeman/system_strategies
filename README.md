@@ -21,7 +21,7 @@
 
 **Pairs Trading**
 
-- [Ornstein Uhlenbeck Model](https://github.com/369geofreeman/system_strategies/blob/main/pairs_trading/Ornstein-Uhlenbeck-Model)
+- [Ornstein Uhlenbeck Model](https://github.com/369geofreeman/system_strategies/tree/main/pairs_trading/Ornstein-Uhlenbeck)
 
 - [Coin Comparision (Heatmap)](https://github.com/369geofreeman/system_strategies/blob/main/pairs_trading/coin_compaire.py)
 
