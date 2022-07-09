@@ -10,6 +10,7 @@ Order Book with Websocket Stream
 
 import websocket
 import threading
+import requests
 import json
 import time
 
@@ -21,10 +22,15 @@ class BitmexWebsocket:
         self._wss_url = "wss://ws.bitmex.com/realtime"
 
         self.symbol = "XBTUSD"
+        self.curr_price = self._get_curr_price()
 
-        ob_depth_pct = 0.05
-        ob_buy_depth = 0
-        ob_sell_depth = 0
+        ob_depth_pct = 0.05 # GET CURRENT PRICE AND BUILD THESE ;)
+        self.ob_buy_depth = self.curr_price - (self.curr_price * ob_depth_pct)
+        self.ob_sell_depth = self.curr_price + (self.curr_price * ob_depth_pct)
+
+        self.raw_book_data = {'total_buys': 0, 'sum_of_buys': 0, 'total_sells': 0, 'sum_of_sells': 0}
+        self.raw_sell_nodes = {"size": [], "price": []}
+        self.raw_buy_nodes = {"size": [], "price": []}
 
         self.ws: websocket.WebSocketApp
         t = threading.Thread(target=self._start_ws)
@@ -34,6 +40,33 @@ class BitmexWebsocket:
         self.topic = "orderBookL2_25"
 
         t.start()
+
+    def _get_curr_price(self):
+
+        url = "https://www.bitmex.com/api/v1/trade/bucketed"
+
+        data = dict()
+        data['symbol'] = self.symbol
+        data['partial'] = True  # returns a candle if it is not finished yet
+        data['binSize'] = '1m'
+        data['count'] = 1   # how many candles we can return (500 max)
+        data['reverse'] = True
+
+        try:
+            response = requests.get(url, params=data)
+        except Exception as e:
+            print(f"Connecton error while making GET request to {url}: {e}")
+            return
+
+        if response.status_code == 200:
+            raw_candles = response.json()
+        else:
+            print(f"Error while making GET request to {url}: {response.status_code}")
+            print(response.headers)
+            return None
+        
+        if raw_candles is not None:
+            return raw_candles[0]['close']
 
     def _start_ws(self):
         self.ws = websocket.WebSocketApp(self._wss_url, on_open=self._on_open, on_close=self._on_close,
@@ -75,37 +108,37 @@ class BitmexWebsocket:
 
     def _on_message(self, ws, msg: str):
 
-        raw_book_data = {'total_buys': 0, 'sum_of_buys': 0, 'total_sells': 0, 'sum_of_sells': 0}
-        raw_sell_nodes = {"size": [], "price": []}
-        raw_buy_nodes = {"size": [], "price": []}
+        buys, total_buys = 0, 0
+        sells, total_sells = 0, 0
 
         response_data = json.loads(msg)
 
         if "table" in response_data:
             if response_data['table'] == self.topic:
-                for d in response_data:
-                    symbol = d['symbol']
+                for data in response_data['data']:
+                    if data['symbol'] == self.symbol:
+                        # print(data)
+                        # time.sleep(5)
 
-                    if symbol == self.symbol:
-                        for idx, data in enumerate(response_data):
+                        if data['side'] == "Buy":
+                            if 'size' in data:
+                                buys += data["size"]
+                                total_buys += 1
 
-                            if data['side'] == "Buy":
-                                if data['price'] > k_buy:
-                                    raw_book_data["sum_of_buys"] += data["size"]
-                                    raw_book_data['total_buys'] += 1
+                        elif data['side'] == "Sell":
+                            if 'size' in data:
+                                sells += data["size"]
+                                total_sells += 1
+        
+        if buys > 0:
+            self.raw_book_data["sum_of_buys"] = buys
+            self.raw_book_data['total_buys'] = total_buys
+            print(f"Total buy volume: {buys}\nTotal buys: {total_buys}")
 
-                                    if raw_data:
-                                        raw_buy_nodes['size'].append(data['size'])
-                                        raw_buy_nodes['price'].append(data['price'])
-
-                            elif data['side'] == "Sell":
-                                if data['price'] < k_sell:
-                                    raw_book_data["sum_of_sells"] += data["size"]
-                                    raw_book_data['total_sells'] += 1
-
-                                    if raw_data:
-                                        raw_sell_nodes['size'].append(data['size'])
-                                        raw_sell_nodes['price'].append(data['price'])
+        if sells > 0:
+            self.raw_book_data["sum_of_sells"] = sells
+            self.raw_book_data['total_sells'] = total_sells
+            print(f"Total sell volume: {sells}\nTotal sells: {total_sells}\n")
 
 bws = BitmexWebsocket()
 
