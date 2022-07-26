@@ -10,6 +10,7 @@
 **Entries**
 
 - [Average Range](https://github.com/369geofreeman/system_strategies/blob/main/entries/average_range_entries.py)
+- [Spread Entries](https://github.com/369geofreeman/system_strategies/blob/main/entries/spread_entries.ipynb)
 
 **API**
 
