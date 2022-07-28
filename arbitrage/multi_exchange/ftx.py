@@ -3,20 +3,19 @@ import time
 import websocket
 import threading
 
-class BinanceWS:
+class FTXWS:
     def __init__(self, testnet, contract):
         self.contract = contract
         self.ticker_price = 0
         self.testnet = testnet
     
         if self.testnet:
-            self._base_url = "https://testnet.binancefuture.com"
-            self._wss_url = "wss://stream.binancefuture.com/ws"
-        else:
-            self._base_url = "https://fapi.binance.com"
-            self._wss_url = "wss://fstream.binance.com/ws"
+            print("No FTX testnet, connecting to live exchange...")
 
-        # Wbsocket ID and set websocket variable
+        self._base_url = "https://ftx.com/api"
+        self._wss_url = "wss://ftx.com/ws/"
+
+        # Websocket ID and set websocket variable
         self._ws_id = 1
         self.ws: websocket.WebSocketApp
         self.reconnect = True
@@ -27,14 +26,7 @@ class BinanceWS:
         t = threading.Thread(target=self._start_ws)
         t.start()
 
-
     def _start_ws(self):
-
-        """
-        Infinite loop (thus has to run in a Thread) that reopens the websocket connection in case it drops
-        :return:
-        """
-
         self.ws = websocket.WebSocketApp(self._wss_url, on_open=self._on_open, on_close=self._on_close,
                                          on_error=self._on_error, on_message=self._on_message)
 
@@ -51,35 +43,16 @@ class BinanceWS:
             time.sleep(2)
 
     def _on_open(self, ws):
-        print("Binance: connection opened")
-
+        print("FTX: connection opened")
         self.ws_connected = True
-
-        for channel in ["bookTicker", "aggTrade"]:
-            self.subscribe_channel(self.contract, channel, reconnection=True)
-
-        if "BTCUSDT" not in self.ws_subscriptions["bookTicker"]:
-            self.subscribe_channel(self.contract, "bookTicker")
+        self.subscribe_channel(self.contract, reconnection=True)
 
     def _on_close(self, ws):
-
-        """
-        Callback method triggered when the connection drops
-        :return:
-        """
-
-        print("Binance Websocket connection closed")
+        print("FTX Websocket connection closed")
         self.ws_connected = False
-
+    
     def _on_error(self, ws, msg: str):
-
-        """
-        Callback method triggered in case of error
-        :param msg:
-        :return:
-        """
-
-        print(f"Binance connection error: {msg}")
+        print(f"FTX connection error: {msg}")
 
     def _on_message(self, ws, msg: str):
 
@@ -90,16 +63,28 @@ class BinanceWS:
         """
 
         data = json.loads(msg)
+        message_type = data['type']
 
-        if "e" in data:
-            if data['e'] == "aggTrade":
-                symbol = data['s']
+        if message_type in {'subscribed', 'unsubscribed'}:
+            return
 
-                if self.contract == symbol:
-                    self.ticker_price = data['p']
-                    print(f"{self.contract} price => {self.ticker_price}", end="\r")
+        elif message_type == 'info':
+            if data['code'] == 20001:
+                return print('connection lost [RECONNECT METHOD TO GO HERE]')
 
-    def subscribe_channel(self, contract: str, channel: str, reconnection=False):
+        elif message_type == 'error':
+            raise Exception(data)
+        
+        channel = data['channel']
+
+        if channel == "ticker":
+            # print(data['data']) = {'bid': 22907.0, 'ask': 22908.0, 'bidSize': 1.8324, 'askSize': 11.1524, 'last': 22908.0, 'time': 1659016082.8891184}
+            self.ticker_price = data['data']['bid']
+            
+            
+            print(f"{self.contract} price => {self.ticker_price}", end="\r")
+
+    def subscribe_channel(self, contract: str, reconnection=False):
 
         """
         Subscribe to updates on a specific topic for all the symbols.
@@ -111,29 +96,13 @@ class BinanceWS:
         """
 
         data = dict()
-        data['method'] = "SUBSCRIBE"
-        data['params'] = []
-
-        if not contract:
-            data['params'].append(channel)
-
-        else:
-            if contract not in self.ws_subscriptions[channel] or reconnection:
-                data['params'].append(contract.lower() + "@" + channel)
-
-                if contract not in self.ws_subscriptions[channel]:
-                    self.ws_subscriptions[channel].append(contract)
-
-            if len(data['params']) == 0:
-                return
-
-        data['id'] = self._ws_id
+        data['op'] = "subscribe"
+        data['channel'] = 'ticker'
+        data['market'] = contract
 
         try:
             self.ws.send(json.dumps(data))  # Converts the JSON object (dictionary) to a JSON string
-            print(f"Binance: subscribing to: {','.join(data['params'])}")
+            print(f"FTX: subscribing to: {contract}")
 
         except Exception as e:
             print(f"Websocket error while subscribing to @bookTicker and @aggTrade: {e}")
-
-        self._ws_id += 1
