@@ -1,22 +1,22 @@
 import json
 import time
 import websocket
+import requests
 import threading
 
-class FTXWS:
+class KrakenWS:
     def __init__(self, contract):
-        self.contract = contract
+        self.contract = "PF_XBTUSD"
+        # self.contract = "PI_XBTUSD"
         self.ticker_price = 0
 
-        self._base_url = "https://ftx.com/api"
-        self._wss_url = "wss://ftx.com/ws/"
+        self._base_url = ""
+        self._wss_url = "wss://futures.kraken.com/ws/v1"
 
         # Websocket ID and set websocket variable
-        self._ws_id = 1
         self.ws: websocket.WebSocketApp
         self.reconnect = True
         self.ws_connected = False
-        self.ws_subscriptions = {"bookTicker": [], "aggTrade": []}
 
         # Threads for multiple connections
         t = threading.Thread(target=self._start_ws)
@@ -34,57 +34,42 @@ class FTXWS:
                     break
 
             except Exception as e:
-                print(f"FTX error in run_forever() method: {e}")
+                print(f"Kraken error in run_forever() method: {e}")
 
             time.sleep(2)
 
     def _on_open(self, ws):
-        print("FTX: connection opened")
+        print("Kraken: connection opened")
         self.ws_connected = True
         self.subscribe_channel(self.contract, reconnection=True)
 
     def _on_close(self, ws):
-        print("FTX: Websocket connection closed")
+        print("Kraken: Websocket connection closed")
         self.ws_connected = False
     
     def _on_error(self, ws, msg: str):
-        print(f"FTX: connection error: {msg}")
-
-    def _on_message(self, ws, msg: str):
-
-        data = json.loads(msg)
-        message_type = data['type']
-
-        if message_type in {'subscribed', 'unsubscribed'}:
-            return
-
-        elif message_type == 'info':
-            if data['code'] == 20001:
-                self._start_ws()
-                return
-
-        elif message_type == 'error':
-            raise Exception(data)
-        
-        channel = data['channel']
-
-        if channel == "ticker":
-            # print(data['data']) = {'bid': 22907.0, 'ask': 22908.0, 'bidSize': 1.8324, 'askSize': 11.1524, 'last': 22908.0, 'time': 1659016082.8891184}
-            self.ticker_price = data['data']['bid']
-            
-            
-            print(f"{self.contract} price => {self.ticker_price}", end="\r")
+        print(f"Kraken: connection error: {msg}")
 
     def subscribe_channel(self, contract: str, reconnection=False):
 
         data = dict()
-        data['op'] = "subscribe"
-        data['channel'] = 'ticker'
-        data['market'] = contract
+        data['event'] = "subscribe"
+        data['feed'] = "ticker"
+        data['product_ids'] = [contract]
 
         try:
             self.ws.send(json.dumps(data))  # Converts the JSON object (dictionary) to a JSON string
-            print(f"FTX: subscribing to: {contract}")
+            print(f"Kraken: subscribing to: {contract}")
 
         except Exception as e:
             print(f"Websocket error while subscribing to @bookTicker and @aggTrade: {e}")
+
+    def _on_message(self, ws, msg: str):
+
+        message = json.loads(msg)
+
+        print(message['bid'], end="\r")
+            
+    def get_contracts(self):
+        r = requests.get('https://futures.kraken.com/derivatives/api/v3/instruments').json()
+        return print({e['symbol'].upper(): e['symbol'].upper() for e in r['instruments']})

@@ -1,14 +1,17 @@
 from binance import BinanceWS
+from kraken import KrakenWS
 from ftx import FTXWS
 
 
-testnet = False
 contract = "BTC"
 
-# binance = BinanceWS(testnet, contract+"USDT")
+# binance = BinanceWS(contract+"USDT")
 # print(binance)
 
-ftx = FTXWS(testnet, contract+"-PERP")
-print(ftx)
+# ftx = FTXWS(contract+"-PERP")
+# print(ftx)
+
+kraken = KrakenWS(contract)
+
 
 

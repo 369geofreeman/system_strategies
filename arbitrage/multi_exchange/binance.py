@@ -4,19 +4,14 @@ import websocket
 import threading
 
 class BinanceWS:
-    def __init__(self, testnet, contract):
+    def __init__(self, contract):
         self.contract = contract
-        self.ticker_price = 0
-        self.testnet = testnet
-    
-        if self.testnet:
-            self._base_url = "https://testnet.binancefuture.com"
-            self._wss_url = "wss://stream.binancefuture.com/ws"
-        else:
-            self._base_url = "https://fapi.binance.com"
-            self._wss_url = "wss://fstream.binance.com/ws"
+        self.ticker_price = 0    
 
-        # Wbsocket ID and set websocket variable
+        self._base_url = "https://fapi.binance.com"
+        self._wss_url = "wss://fstream.binance.com/ws"
+
+        # Websocket ID and set websocket variable
         self._ws_id = 1
         self.ws: websocket.WebSocketApp
         self.reconnect = True
