@@ -24,7 +24,7 @@ class BinanceWS:
 
 
     def _start_ws(self):
-        self.ws = websocket.WebSocketApp(self._wss_url, on_open=self._on_open, on_close=self._on_close,
+        self.ws = websocket.WebSocketApp(self._wss_url, on_open=self._on_open, on_close=self.on_close,
                                          on_error=self._on_error, on_message=self._on_message)
 
         while True:
@@ -50,7 +50,7 @@ class BinanceWS:
         if "BTCUSDT" not in self.ws_subscriptions["bookTicker"]:
             self.subscribe_channel(self.contract, "bookTicker")
 
-    def _on_close(self, ws):
+    def on_close(self, ws):
         print("Binance Websocket connection closed")
         self.ws_connected = False
 

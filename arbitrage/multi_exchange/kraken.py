@@ -22,7 +22,7 @@ class KrakenWS:
         t.start()
 
     def _start_ws(self):
-        self.ws = websocket.WebSocketApp(self._wss_url, on_open=self._on_open, on_close=self._on_close,
+        self.ws = websocket.WebSocketApp(self._wss_url, on_open=self._on_open, on_close=self.on_close,
                                          on_error=self._on_error, on_message=self._on_message)
 
         while True:
@@ -42,7 +42,7 @@ class KrakenWS:
         self.ws_connected = True
         self.subscribe_channel(self.contract, reconnection=True)
 
-    def _on_close(self, ws):
+    def on_close(self, ws):
         print("Kraken: Websocket connection closed")
         self.ws_connected = False
     
