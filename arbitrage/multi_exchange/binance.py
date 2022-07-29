@@ -86,13 +86,24 @@ class BinanceWS:
 
         data = json.loads(msg)
 
+        # Best bid price
         if "e" in data:
-            if data['e'] == "aggTrade":
+            if data['e'] == "bookTicker":
                 symbol = data['s']
 
-                if self.contract == symbol:
-                    self.ticker_price = data['p']
+                if symbol == self.contract:
+                    self.ticker_price = data['b']
                     print(f"{self.contract} price => {self.ticker_price}", end="\r")
+
+
+        # Curr price
+        # if "e" in data:
+        #     if data['e'] == "aggTrade":
+        #         symbol = data['s']
+
+        #         if self.contract == symbol:
+        #             self.ticker_price = data['p']
+        #             print(f"{self.contract} price => {self.ticker_price}", end="\r")
 
     def subscribe_channel(self, contract: str, channel: str, reconnection=False):
 

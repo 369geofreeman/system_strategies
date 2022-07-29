@@ -6,8 +6,7 @@ import threading
 
 class KrakenWS:
     def __init__(self, contract):
-        self.contract = "PF_XBTUSD"
-        # self.contract = "PI_XBTUSD"
+        self.contract = "PF_XBTUSD" if contract == "BTC" else "PF_" + contract + "USD"
         self.ticker_price = 0
 
         self._base_url = ""

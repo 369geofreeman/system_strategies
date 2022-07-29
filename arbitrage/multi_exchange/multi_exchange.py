@@ -5,13 +5,8 @@ from ftx import FTXWS
 
 contract = "BTC"
 
-# binance = BinanceWS(contract+"USDT")
-# print(binance)
-
-# ftx = FTXWS(contract+"-PERP")
-# print(ftx)
-
+binance = BinanceWS(contract+"USDT")
+ftx = FTXWS(contract+"-PERP")
 kraken = KrakenWS(contract)
-
 
 
