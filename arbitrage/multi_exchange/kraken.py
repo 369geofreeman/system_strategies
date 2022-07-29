@@ -64,10 +64,9 @@ class KrakenWS:
             print(f"Websocket error while subscribing to @bookTicker and @aggTrade: {e}")
 
     def _on_message(self, ws, msg: str):
-
         message = json.loads(msg)
-
-        print(message['bid'], end="\r")
+        if 'bid' in message:
+            self.ticker_price = message['bid']
             
     def get_contracts(self):
         r = requests.get('https://futures.kraken.com/derivatives/api/v3/instruments').json()

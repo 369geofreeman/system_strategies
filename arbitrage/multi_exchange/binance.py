@@ -24,12 +24,6 @@ class BinanceWS:
 
 
     def _start_ws(self):
-
-        """
-        Infinite loop (thus has to run in a Thread) that reopens the websocket connection in case it drops
-        :return:
-        """
-
         self.ws = websocket.WebSocketApp(self._wss_url, on_open=self._on_open, on_close=self._on_close,
                                          on_error=self._on_error, on_message=self._on_message)
 
@@ -57,32 +51,13 @@ class BinanceWS:
             self.subscribe_channel(self.contract, "bookTicker")
 
     def _on_close(self, ws):
-
-        """
-        Callback method triggered when the connection drops
-        :return:
-        """
-
         print("Binance Websocket connection closed")
         self.ws_connected = False
 
     def _on_error(self, ws, msg: str):
-
-        """
-        Callback method triggered in case of error
-        :param msg:
-        :return:
-        """
-
         print(f"Binance connection error: {msg}")
 
     def _on_message(self, ws, msg: str):
-
-        """
-        The websocket updates of the channels the program subscribed to will go through this callback method
-        :param msg:
-        :return:
-        """
 
         data = json.loads(msg)
 
@@ -93,28 +68,9 @@ class BinanceWS:
 
                 if symbol == self.contract:
                     self.ticker_price = data['b']
-                    print(f"{self.contract} price => {self.ticker_price}", end="\r")
-
-
-        # Curr price
-        # if "e" in data:
-        #     if data['e'] == "aggTrade":
-        #         symbol = data['s']
-
-        #         if self.contract == symbol:
-        #             self.ticker_price = data['p']
-        #             print(f"{self.contract} price => {self.ticker_price}", end="\r")
+                    # print(f"{self.contract} price => {self.ticker_price}", end="\r")
 
     def subscribe_channel(self, contract: str, channel: str, reconnection=False):
-
-        """
-        Subscribe to updates on a specific topic for all the symbols.
-        If your list is bigger than 300 symbols, the subscription will fail (observed on Binance Spot).
-        :param contracts:
-        :param channel: aggTrades, bookTicker...
-        :param reconnection: Force to subscribe to a symbol even if it already in self.ws_subscriptions[symbol] list
-        :return:
-        """
 
         data = dict()
         data['method'] = "SUBSCRIBE"

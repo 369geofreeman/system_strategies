@@ -71,9 +71,7 @@ class FTXWS:
         if channel == "ticker":
             # print(data['data']) = {'bid': 22907.0, 'ask': 22908.0, 'bidSize': 1.8324, 'askSize': 11.1524, 'last': 22908.0, 'time': 1659016082.8891184}
             self.ticker_price = data['data']['bid']
-            
-            
-            print(f"{self.contract} price => {self.ticker_price}", end="\r")
+            # print(f"{self.contract} price => {self.ticker_price}", end="\r")
 
     def subscribe_channel(self, contract: str, reconnection=False):
 
