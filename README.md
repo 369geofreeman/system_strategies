@@ -25,6 +25,10 @@
 - [Integration](https://github.com/369geofreeman/system_strategies/blob/main/pairs_trading/integration.py)
 - [Cointegration](https://github.com/369geofreeman/system_strategies/blob/main/pairs_trading/cointegration.py)
 
+**Arbirage**
+
+- [Multi Exchange tickers of same asset](https://github.com/369geofreeman/system_strategies/blob/main/arbitrage/multi_exchange/multi_exchange.py)
+
 **Functions**
 
 - [Comparing Deviations](https://github.com/369geofreeman/system_strategies/blob/main/functions/comparing_deviations/)
