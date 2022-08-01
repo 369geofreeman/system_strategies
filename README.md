@@ -37,6 +37,9 @@
     - Mean Deviation
     - Median Absolute Deviation
     - RMSD
+- [Volatility](https://github.com/369geofreeman/system_strategies/blob/main/functions/volatility/)
+    - [Standard Deviation](https://github.com/369geofreeman/system_strategies/blob/main/functions/volatility/std_dev.ipynb)
+    - [Garman Klass](https://github.com/369geofreeman/system_strategies/blob/main/functions/volatility/garmanKlass.ipynb)
 
 - [Average True Range](https://github.com/369geofreeman/system_strategies/blob/main/functions/average_true_range.py)
 - [Markov (SPX)](https://github.com/369geofreeman/system_strategies/blob/main/functions/markov_spx)
