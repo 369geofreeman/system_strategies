@@ -1,7 +1,12 @@
 from datetime import datetime, timedelta
 
 
-now = datetime.now()
-now_plus_10 = now + timedelta(minutes = 10)
+x = [('a', True), ('b', False), ('c', True)]
 
-print(now < now_plus_10)
+
+for z, y in x:
+
+    if y:
+        print("yes")
+    else:
+        print('No')
