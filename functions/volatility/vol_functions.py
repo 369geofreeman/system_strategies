@@ -100,7 +100,7 @@ def std_dev(price_data, window=30, trading_periods=252, clean=True):
     result = log_return.rolling(
         window=window,
         center=False
-    ).std() * math.sqrt(trading_periods)
+    ).std() * math.sqrt(12 * trading_periods)
 
     if clean:
         return result.dropna()
