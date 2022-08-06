@@ -16,6 +16,7 @@
 
 - [Basic API structure for buy / sell orders on any exchange](https://github.com/369geofreeman/system_strategies/blob/main/API/buy_sell_exchange.py)
 - [Bitmex API Example](https://github.com/369geofreeman/system_strategies/blob/main/API/bitmex_api_exp.py)
+- [CoinGecko (marketcap / volume)](https://github.com/369geofreeman/system_strategies/blob/main/API/coinGecko_mc.ipynb)
 
 **Pairs Trading**
 

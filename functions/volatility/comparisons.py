@@ -183,7 +183,9 @@ tf = "5m"
 contract = "ETHUSD"
 trading_periods = (60 // int(tf.replace('m', ''))) * 24
 
-# 1: list all on one chart 2: list each individually, 3: apply to close price 
+# 1: list all on one chart
+# 2: list each individually
+# 3: apply to close price via bands
 display_type = 3
 
 vol_comparisons = VolComparisons(from_time, to_time, tf, contract, trading_periods)
