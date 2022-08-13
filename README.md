@@ -39,6 +39,8 @@
     - Median Absolute Deviation
     - RMSD
 
+- [Mann Kendall - Trend Detection](https://github.com/369geofreeman/system_strategies/blob/main/functions/mann_kendall/mann_k.ipynb)
+
 - Volatility Estimators
 
     - [Comparisons](https://github.com/369geofreeman/system_strategies/blob/main/functions/volatility/comparisons.py)
